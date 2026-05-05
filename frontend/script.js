@@ -1,5 +1,4 @@
-const API_URL = "http://localhost:8000/api";
-fetch("https://virtual-labs-7o4w.onrender.com/your-endpoint")
+const API_URL = "https://virtual-labs-7o4w.onrender.com/api";
 
 // Store readings for tables
 let readingsStore = {
