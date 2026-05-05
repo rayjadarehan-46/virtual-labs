@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Labs - LD College of Engineering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="college-name">LD COLLEGE OF ENGINEERING</h1>
+            <p class="subtitle">Virtual Physics Laboratory</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">Virtual Labs</a>
+            <ul class="nav-menu">
+                <li><a href="#pn-junction" class="nav-link active" onclick="switchExperiment('pn')">PN Junction</a></li>
+                <li><a href="#zener" class="nav-link" onclick="switchExperiment('zener')">Zener Diode</a></li>
+                <li><a href="#four-probe" class="nav-link" onclick="switchExperiment('fourprobe')">Four Probe</a></li>
+                <li><a href="#laser-divergence" class="nav-link" onclick="switchExperiment('laser-div')">Laser Divergence</a></li>
+                <li><a href="#laser-distance" class="nav-link" onclick="switchExperiment('laser-dist')">Laser Distance</a></li>
+                <li><a href="#wavelength" class="nav-link" onclick="switchExperiment('wavelength')">Wavelength</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        
+        <!-- PN Junction Experiment -->
+        <section id="pn-section" class="experiment-section active">
+            <div class="experiment-header">
+                <h2>PN Junction Diode - V-I Characteristics</h2>
+                <p class="description">Measure current for different voltages and plot V-I characteristics.</p>
+            </div>
+
+            <div class="experiment-content">
+                <div class="controls-panel">
+                    <h3>Measurement Setup</h3>
+                    <div class="control-group">
+                        <label for="pn-type">Measurement Type:</label>
+                        <select id="pn-type" onchange="updatePNInfo()">
+                            <option value="forward">Forward Bias (0 to 1V)</option>
+                            <option value="reverse">Reverse Bias (-0.2 to 0V)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="pn-temperature">Temperature (K):</label>
+                        <input type="number" id="pn-temperature" value="300" min="250" max="400" step="10">
+                    </div>
+
+                    <h3 style="margin-top: 1.5rem;">Record Reading</h3>
+                    <div class="control-group">
+                        <label for="pn-voltage">Applied Voltage (V):</label>
+                        <input type="number" id="pn-voltage" value="0.5" min="-0.5" max="1" step="0.01">
+                        <small id="pn-voltage-hint">Range: 0 to 1V</small>
+                    </div>
+                    <button class="btn-simulate" onclick="recordPNReading()">Record Reading</button>
+                    <button class="btn-reset" onclick="clearPNReadings()">Clear All</button>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Information</h3>
+                    <p><strong>Equation:</strong> I = I<sub>s</sub> × (e<sup>qV/kT</sup> - 1)</p>
+                    <p><strong>Thermal Voltage (V<sub>t</sub>):</strong> <span id="pn-vt">0.026 V</span></p>
+                    <p><strong>Saturation Current (I<sub>s</sub>):</strong> <span id="pn-is">1e-14 A</span></p>
+                    <p id="pn-info-text" class="info-text">Forward bias: Apply positive voltage to see exponential increase in current. Record 10 different voltage values.</p>
+                </div>
+
+                <div class="readings-panel">
+                    <h3>Readings Table (<span id="pn-count">0</span>/10)</h3>
+                    <table class="readings-table">
+                        <thead>
+                            <tr>
+                                <th>Reading No.</th>
+                                <th>Voltage (V)</th>
+                                <th>Current (mA)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pn-readings">
+                            <tr><td colspan="3" class="empty">No readings yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="pn-graph-container" class="graph-container" style="display:none;">
+                    <canvas id="pn-canvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Zener Diode Experiment -->
+        <section id="zener-section" class="experiment-section">
+            <div class="experiment-header">
+                <h2>Zener Diode - V-I Characteristics with Breakdown</h2>
+                <p class="description">Measure current for different voltages and observe breakdown characteristics.</p>
+            </div>
+
+            <div class="experiment-content">
+                <div class="controls-panel">
+                    <h3>Measurement Setup</h3>
+                    <div class="control-group">
+                        <label for="zener-type">Measurement Type:</label>
+                        <select id="zener-type" onchange="updateZenerInfo()">
+                            <option value="forward">Forward Bias (0 to 0.7V)</option>
+                            <option value="reverse">Reverse Bias (-6 to 0V)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="zener-vz">Zener Voltage (V):</label>
+                        <input type="number" id="zener-vz" value="5.0" min="2" max="12" step="0.5">
+                    </div>
+                    <div class="control-group">
+                        <label for="zener-temperature">Temperature (K):</label>
+                        <input type="number" id="zener-temperature" value="300" min="250" max="400" step="10">
+                    </div>
+
+                    <h3 style="margin-top: 1.5rem;">Record Reading</h3>
+                    <div class="control-group">
+                        <label for="zener-voltage">Applied Voltage (V):</label>
+                        <input type="number" id="zener-voltage" value="-2.5" min="-6" max="0.7" step="0.1">
+                        <small id="zener-voltage-hint">Range: -6 to 0.7V</small>
+                    </div>
+                    <button class="btn-simulate" onclick="recordZenerReading()">Record Reading</button>
+                    <button class="btn-reset" onclick="clearZenerReadings()">Clear All</button>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Information</h3>
+                    <p><strong>Zener Breakdown Voltage:</strong> <span id="zener-bv">5.0 V</span></p>
+                    <p><strong>Forward Bias:</strong> Acts like normal diode</p>
+                    <p><strong>Reverse Bias:</strong> Sharp current increase at breakdown voltage</p>
+                    <p id="zener-info-text" class="info-text">Record 10 different voltage values across forward and reverse regions to see the characteristic curve.</p>
+                </div>
+
+                <div class="readings-panel">
+                    <h3>Readings Table (<span id="zener-count">0</span>/10)</h3>
+                    <table class="readings-table">
+                        <thead>
+                            <tr>
+                                <th>Reading No.</th>
+                                <th>Voltage (V)</th>
+                                <th>Current (mA)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="zener-readings">
+                            <tr><td colspan="3" class="empty">No readings yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="zener-graph-container" class="graph-container" style="display:none;">
+                    <canvas id="zener-canvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Four Probe Resistivity Experiment -->
+        <section id="fourprobe-section" class="experiment-section">
+            <div class="experiment-header">
+                <h2>Four Probe Resistivity Measurement</h2>
+                <p class="description">Calculate the resistivity of a material using the four-probe method.</p>
+            </div>
+
+            <div class="experiment-content">
+                <div class="controls-panel">
+                    <h3>Measurement Inputs</h3>
+                    <div class="control-group">
+                        <label for="fp-voltage">Applied Voltage (V):</label>
+                        <input type="number" id="fp-voltage" value="1.0" min="0.1" max="10" step="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label for="fp-current">Measured Current (A):</label>
+                        <input type="number" id="fp-current" value="0.01" min="0.001" max="1" step="0.001">
+                    </div>
+                    <div class="control-group">
+                        <label for="fp-distance">Probe Distance (m):</label>
+                        <input type="number" id="fp-distance" value="0.001" min="0.0001" max="0.01" step="0.0001">
+                    </div>
+                    <div class="control-group">
+                        <label for="fp-thickness">Sample Thickness (m):</label>
+                        <input type="number" id="fp-thickness" value="0.0001" min="0.00001" max="0.01" step="0.00001">
+                    </div>
+                    <button class="btn-simulate" onclick="calculateFourProbe()">Calculate</button>
+                </div>
+
+                <div class="results-panel">
+                    <h3>Results</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="result-label">Resistance:</span>
+                            <span class="result-value" id="fp-resistance">-</span>
+                            <span class="result-unit">Ω</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Resistivity:</span>
+                            <span class="result-value" id="fp-resistivity">-</span>
+                            <span class="result-unit">Ω·m</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Conductivity:</span>
+                            <span class="result-value" id="fp-conductivity">-</span>
+                            <span class="result-unit">S/m</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Sheet Resistance:</span>
+                            <span class="result-value" id="fp-sheet">-</span>
+                            <span class="result-unit">Ω/sq</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Four Probe Method</h3>
+                    <p><strong>Formula:</strong> ρ = R × 2π × s × t</p>
+                    <p><strong>Where:</strong></p>
+                    <ul>
+                        <li>ρ = Resistivity</li>
+                        <li>R = Measured resistance</li>
+                        <li>s = Probe spacing</li>
+                        <li>t = Sample thickness</li>
+                    </ul>
+                    <p class="info-text">The four-probe method eliminates contact resistance effects, providing accurate resistivity measurements.</p>
+                </div>
+
+                <div class="readings-panel">
+                    <h3>Readings Table</h3>
+                    <table class="readings-table">
+                        <thead>
+                            <tr>
+                                <th>Reading No.</th>
+                                <th>Voltage (V)</th>
+                                <th>Current (A)</th>
+                                <th>Resistivity (Ω·m)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fourprobe-readings">
+                            <tr><td colspan="4" class="empty">Run calculation to see readings</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Laser Divergence Experiment -->
+        <section id="laser-div-section" class="experiment-section">
+            <div class="experiment-header">
+                <h2>Laser Beam Divergence</h2>
+                <p class="description">Calculate laser beam divergence and beam size at different distances.</p>
+            </div>
+
+            <div class="experiment-content">
+                <div class="controls-panel">
+                    <h3>Parameters</h3>
+                    <div class="control-group">
+                        <label for="ld-wavelength">Wavelength (nm):</label>
+                        <input type="number" id="ld-wavelength" value="650" min="400" max="1550" step="10">
+                    </div>
+                    <div class="control-group">
+                        <label for="ld-diameter">Beam Diameter (mm):</label>
+                        <input type="number" id="ld-diameter" value="2" min="0.1" max="10" step="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label for="ld-distance">Distance (m):</label>
+                        <input type="number" id="ld-distance" value="10" min="0.1" max="100" step="0.5">
+                    </div>
+                    <button class="btn-simulate" onclick="calculateLaserDivergence()">Calculate</button>
+                </div>
+
+                <div class="results-panel">
+                    <h3>Results</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="result-label">Divergence Angle:</span>
+                            <span class="result-value" id="ld-angle">-</span>
+                            <span class="result-unit">degrees</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Beam Diameter @ Distance:</span>
+                            <span class="result-value" id="ld-beam-dia">-</span>
+                            <span class="result-unit">mm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Laser Divergence</h3>
+                    <p><strong>Formula:</strong> θ = 4λ / (πD)</p>
+                    <p><strong>Where:</strong> θ = Divergence angle, λ = Wavelength, D = Beam diameter</p>
+                    <p class="info-text">Laser beam divergence increases with wavelength and decreases with larger beam diameters. Red lasers (650nm) diverge more than infrared (1550nm).</p>
+                </div>
+
+                <div class="readings-panel">
+                    <h3>Readings Table</h3>
+                    <table class="readings-table">
+                        <thead>
+                            <tr>
+                                <th>Reading No.</th>
+                                <th>Wavelength (nm)</th>
+                                <th>Distance (m)</th>
+                                <th>Beam Diameter (mm)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="laser-div-readings">
+                            <tr><td colspan="4" class="empty">Run calculation to see readings</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Laser Distance Meter Experiment -->
+        <section id="laser-dist-section" class="experiment-section">
+            <div class="experiment-header">
+                <h2>Laser Distance Meter - Time of Flight</h2>
+                <p class="description">Calculate distance using laser pulse time of flight measurement.</p>
+            </div>
+
+            <div class="experiment-content">
+                <div class="controls-panel">
+                    <h3>Measurement Input</h3>
+                    <div class="control-group">
+                        <label for="ldm-tof">Time of Flight (μs):</label>
+                        <input type="number" id="ldm-tof" value="66.7" min="0.1" max="1000" step="0.1">
+                        <small>Microseconds (1 μs ≈ 300m distance)</small>
+                    </div>
+                    <button class="btn-simulate" onclick="calculateLaserDistance()">Calculate</button>
+                </div>
+
+                <div class="results-panel">
+                    <h3>Results</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="result-label">Distance:</span>
+                            <span class="result-value" id="ldm-distance">-</span>
+                            <span class="result-unit">m</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Distance:</span>
+                            <span class="result-value" id="ldm-distance-cm">-</span>
+                            <span class="result-unit">cm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Time of Flight Method</h3>
+                    <p><strong>Formula:</strong> d = (c × t) / 2</p>
+                    <p><strong>Where:</strong> d = Distance, c = Speed of light (3×10⁸ m/s), t = Time of flight</p>
+                    <p class="info-text">Laser distance meters emit a pulse and measure the time it takes to reflect back. The division by 2 accounts for the round trip.</p>
+                </div>
+
+                <div class="readings-panel">
+                    <h3>Readings Table</h3>
+                    <table class="readings-table">
+                        <thead>
+                            <tr>
+                                <th>Reading No.</th>
+                                <th>Time of Flight (μs)</th>
+                                <th>Distance (m)</th>
+                                <th>Distance (cm)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="laser-dist-readings">
+                            <tr><td colspan="4" class="empty">Run calculation to see readings</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wavelength by Diffraction Grating Experiment -->
+        <section id="wavelength-section" class="experiment-section">
+            <div class="experiment-header">
+                <h2>Wavelength Measurement - Diffraction Grating</h2>
+                <p class="description">Determine wavelength of light using diffraction grating equation.</p>
+            </div>
+
+            <div class="experiment-content">
+                <div class="controls-panel">
+                    <h3>Parameters</h3>
+                    <div class="control-group">
+                        <label for="wdg-order">Diffraction Order (m):</label>
+                        <input type="number" id="wdg-order" value="1" min="1" max="5" step="1">
+                    </div>
+                    <div class="control-group">
+                        <label for="wdg-spacing">Grating Spacing (μm):</label>
+                        <input type="number" id="wdg-spacing" value="1" min="0.1" max="10" step="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label for="wdg-angle">Diffraction Angle (°):</label>
+                        <input type="number" id="wdg-angle" value="30" min="0" max="85" step="0.5">
+                    </div>
+                    <button class="btn-simulate" onclick="calculateWavelength()">Calculate</button>
+                </div>
+
+                <div class="results-panel">
+                    <h3>Results</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="result-label">Wavelength:</span>
+                            <span class="result-value" id="wdg-wavelength">-</span>
+                            <span class="result-unit">nm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h3>Grating Equation</h3>
+                    <p><strong>Formula:</strong> d × sin(θ) = m × λ</p>
+                    <p><strong>Where:</strong></p>
+                    <ul>
+                        <li>d = Grating spacing</li>
+                        <li>θ = Diffraction angle</li>
+                        <li>m = Order of diffraction (1, 2, 3...)</li>
+                        <li>λ = Wavelength</li>
+                    </ul>
+                    <p class="info-text">Diffraction gratings split light into different wavelengths. Each order shows maximum intensity at specific angles determined by the grating equation.</p>
+                </div>
+
+                <div class="readings-panel">
+                    <h3>Readings Table</h3>
+                    <table class="readings-table">
+                        <thead>
+                            <tr>
+                                <th>Reading No.</th>
+                                <th>Order (m)</th>
+                                <th>Angle (°)</th>
+                                <th>Wavelength (nm)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wavelength-readings">
+                            <tr><td colspan="4" class="empty">Run calculation to see readings</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 LD College of Engineering | Virtual Physics Laboratory</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
