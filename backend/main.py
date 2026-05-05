@@ -4,6 +4,9 @@ import numpy as np
 from pydantic import BaseModel
 
 app = FastAPI()
+@app.get("/")
+def home():
+    return {"message": "Virtual Labs Backend is Running 🚀"}
 
 # Enable CORS for frontend access
 app.add_middleware(
